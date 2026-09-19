@@ -8,42 +8,6 @@ SMODS.Atlas {
 
 SMODS.Sound({key = "lob_snd_explosion", path = "snd_explosion.ogg",})
 
--- EXERCICEs
-
--- ==========================================
--- MATHÉMATIQUES
--- Joker ki marche pas 
-
--- x1.x2.x3.4.x5
--- x6.x7.x8.9(desc+ludi).v10
--- x11.v12.x13.x14.x15
-
--- x16.x17.x18.x19.20(marche pas)
--- 21(manque desc dynamique).x22.23(ne choisit rien).x24.25(booster + case shop marche po)
--- x26.x27.x28.x29.x30
-
--- x31.x32.x33.x34.x35
--- x36.x37.x38.x39.x40
--- x41.x42.x43.x44.x45
-
--- x46.x47.x48.x49.x50
--- x51.x52.x53.x54.x55 
--- x56.x57.x58.x59.x60
-
--- x61.x62.x63.x64.x65
--- x66.x67.x68.x69.x70
--- x71.x72.x73.x74.x75
-
--- x76.77(marche pas).78(calcul bon, mais pas de modification des stats3).x79.x80
--- x81.x82.x83.x84.x85
--- x86.x87.v88.x89.R90
-
--- dark seal, truc bizarre taille main et taille joker, warning job application
--- probablement proble detection de la destruction
--- ==========================================
-
--- FONCTION DÉRIVÉE
-
 SMODS.Joker {
     key = 'fonction_derivee',
     loc_txt = {
@@ -63,7 +27,6 @@ SMODS.Joker {
     cost = 4,
 
     loc_vars = function(self, info_queue, card)
-        -- SÉCURITÉ : On vérifie que G.GAME et current_round existent (pour le menu Collection)
         local hands_played = (G.GAME and G.GAME.current_round and G.GAME.current_round.hands_played) or 0
         local current_mult = (hands_played + 1) * card.ability.extra.mult_per_hand
         return { vars = { card.ability.extra.mult_per_hand, current_mult } }
@@ -82,10 +45,6 @@ SMODS.Joker {
         end
     end
 }
-
-
-
--- APPLICATION LIPSCHITZIENNE
 
 SMODS.Joker {
     key = 'lipschitzienne',
@@ -109,7 +68,6 @@ SMODS.Joker {
     cost = 3,
     calculate = function(self, card, context)
         if context.joker_main then
-            -- On vérifie directement si le niveau de la main de poker jouée est égal à 1
             if G.GAME.hands[context.scoring_name].level == 1 then
                 return {
                     mult_mod = card.ability.extra.mult,
@@ -121,7 +79,6 @@ SMODS.Joker {
     end
 }
 
--- PIVOT DE GAUSS
 SMODS.Joker {
     key = 'pivot_de_gauss',
     loc_txt = {
@@ -141,7 +98,6 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
         if context.joker_main then
-            -- CORRECTION : On inverse manuellement les variables globales et on met à jour l'UI
             local temp_chips = hand_chips or 0
             local temp_mult = mult or 0
             
@@ -158,7 +114,6 @@ SMODS.Joker {
     end
 }
 
--- CAUCHY
 SMODS.Joker {
     key = 'cauchy',
     loc_txt = {
@@ -206,7 +161,6 @@ SMODS.Joker {
     end
 }
 
--- PYTHAGORE
 SMODS.Joker {
     key = 'pythagore',
     loc_txt = {
@@ -234,7 +188,6 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
         if context.before and not context.blueprint then
-            -- SÉCURITÉ : On vérifie que la table poker_hands et le Brelan existent bien avant d'utiliser next()
             if context.poker_hands and context.poker_hands['Three of a Kind'] and next(context.poker_hands['Three of a Kind']) then
                 card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.chip_gain
                 card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_gain
@@ -246,7 +199,6 @@ SMODS.Joker {
         end
 
         if context.joker_main then
-            -- Si l'un des deux a augmenté, on applique les deux
             if card.ability.extra.chips > 0 or card.ability.extra.mult > 0 then
                 return {
                     chip_mod = card.ability.extra.chips,
@@ -258,7 +210,6 @@ SMODS.Joker {
     end
 }
 
--- NATURE DES SÉRIES
 SMODS.Joker {
     key = 'nature',
     loc_txt = {
@@ -295,7 +246,6 @@ SMODS.Joker {
     end
 }
 
--- EDP D'ORDRE 2
 SMODS.Joker {
     key = 'edp_dordr_2',
     loc_txt = {
@@ -342,7 +292,6 @@ SMODS.Joker {
     end
 }
 
--- SIGMA
 SMODS.Joker {
     key = 'sigma',
     loc_txt = {
@@ -379,7 +328,6 @@ SMODS.Joker {
             if dollars_earned > 0 then
                 card.ability.extra.points = card.ability.extra.points % card.ability.extra.threshold
                 
-                -- CORRECTION : On englobe ease_dollars dans un Event pour éviter le crash ref_table
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         ease_dollars(dollars_earned)
@@ -396,7 +344,6 @@ SMODS.Joker {
     end
 }
 
--- INTÉGRALE
 SMODS.Joker {
     key = 'integrale', 
     loc_txt = { 
@@ -488,8 +435,6 @@ SMODS.Joker {
     pos = { x = 0, y = 11 },
     cost = 6,
 
-    -- G.GAME.probabilities.normal représente le numérateur (le "1" de "1 sur X")
-    -- En le divisant par 2, on rend les effets deux fois plus rares.
     add_to_deck = function(self, card)
         G.GAME.probabilities.normal = G.GAME.probabilities.normal / 2
     end,
@@ -498,10 +443,6 @@ SMODS.Joker {
         G.GAME.probabilities.normal = G.GAME.probabilities.normal * 2
     end
 }
-
--- ==========================================
--- PHYSIQUE
--- ==========================================
 
 SMODS.Joker {
     key = 'condorcet',
@@ -517,7 +458,7 @@ SMODS.Joker {
     config = { extra = { gain = 2, mult = 0 } },
     blueprint_compat = true,
     pools = { ["LOB"] = true, ["EXERCISE"] = true, ["PHYSIQUE"] = true },
-    rarity = 2, -- Demandé Peu Commun
+    rarity = 2, 
     atlas = 'jokers_common',
     pos = { x = 1, y = 11 },
     cost = 6,
@@ -531,7 +472,6 @@ SMODS.Joker {
             local ranks = {}
             local all_different = true
             
-            -- On vérifie s'il y a des doublons
             for _, c in ipairs(context.scoring_hand) do
                 if ranks[c.base.value] then
                     all_different = false
@@ -661,7 +601,6 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
-            -- Vérifie si la carte a un Sceau (Seal)
             if context.other_card.seal then
                 return {
                     chips = card.ability.extra.chips,
@@ -695,18 +634,13 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- On applique le debuff de mult
         if context.joker_main then
             return {
                 Xmult_mod = card.ability.extra.debuff,
                 message = "Cylindrique !"
             }
-            -- Balatro Vanilla ne supporte pas XChips dans joker_main par défaut, 
-            -- SMODS permet x_chips sur le retour standard.
-            -- return { x_mult = 0.5, x_chips = 0.5 }
         end
         
-        -- On donne l'argent après le score
         if context.after and not context.blueprint then
             ease_dollars(card.ability.extra.dollars)
             return {
@@ -717,7 +651,6 @@ SMODS.Joker {
     end
 }
 
--- ÉQUATIONS DE MAXWELL
 SMODS.Joker {
     key = 'equation_maxwell',
     loc_txt = {
@@ -738,19 +671,16 @@ SMODS.Joker {
     cost = 4,
 
     loc_vars = function(self, info_queue, card)
-        -- #1# = mult, #2# = Nom de la couleur localisé
         return { vars = { card.ability.extra.mult, localize(card.ability.extra.suit, 'suits_plural') } }
     end,
 
     calculate = function(self, card, context)
-        -- Tirage de la nouvelle couleur au début de la manche
         if context.first_hand_drawn and not context.blueprint then
             local suits = {'Spades', 'Hearts', 'Clubs', 'Diamonds'}
             card.ability.extra.suit = suits[math.random(#suits)]
             return { message = "Magnétisé !", colour = G.C.SECONDARY_SET.Tarot }
         end
 
-        -- Application du Mult pour chaque carte jouée correspondante
         if context.individual and context.cardarea == G.play then
             if context.other_card:is_suit(card.ability.extra.suit) then
                 return {
@@ -793,7 +723,7 @@ SMODS.Joker {
             "{X:mult,C:white}X#1#{} Mult."
         }
     },
-    config = { extra = { xmult = 1.1 } }, -- Changé selon ta demande
+    config = { extra = { xmult = 1.1 } },
     blueprint_compat = true,
     pools = { ["LOB"] = true, ["EXERCISE"] = true, ["PHYSIQUE"] = true },
     rarity = 2,
@@ -856,21 +786,18 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
             
-            -- PIQUES : Jetons
             if context.other_card:is_suit('Spades') then
                 return {
                     chips = card.ability.extra.spades_chips,
                     card = card
                 }
             
-            -- TRÈFLES : Mult
             elseif context.other_card:is_suit('Clubs') then
                 return {
                     mult = card.ability.extra.clubs_mult,
                     card = card
                 }
             
-            -- CARREAUX : Argent
             elseif context.other_card:is_suit('Diamonds') then
                 G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra.diamonds_money
                 G.E_MANAGER:add_event(Event({func = (function() 
@@ -882,7 +809,6 @@ SMODS.Joker {
                     card = card
                 }
             
-            -- CŒURS : XMult Aléatoire
             elseif context.other_card:is_suit('Hearts') then
                 if pseudorandom('qcm_hearts') < G.GAME.probabilities.normal / card.ability.extra.hearts_odds then
                     return {
@@ -928,7 +854,6 @@ SMODS.Joker {
             end
         end
 
-        -- On ajoute une probabilité de destruction bonus APRÈS que la carte de base ait fait son jet Vanilla
         if context.destroying_card and not context.blueprint then
             if context.destroying_card.config.center.key == 'm_glass' then
                 if pseudorandom('optique') < G.GAME.probabilities.normal / card.ability.extra.shatter_chance then
@@ -938,10 +863,6 @@ SMODS.Joker {
         end
     end
 }
-
--- ==========================================
--- INFORMATIQUE
--- ==========================================
 
 SMODS.Joker {
     key = 'c',
@@ -998,7 +919,6 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- hands_left passe à 0 au moment où tu joues ta dernière main
         if context.joker_main and G.GAME.current_round.hands_left == 0 then
             return {
                 mult_mod = card.ability.extra.mult,
@@ -1118,7 +1038,6 @@ SMODS.Joker {
             return { message = "Nouvelle cible!" }
         end
 
-        -- On utilise pre_discard pour lire la main en cours de défausse
         if context.pre_discard and not context.blueprint then
             local text, _, _ = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
             if text == card.ability.extra.target_hand then
@@ -1265,12 +1184,10 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- Scaler avant le score
         if context.before and not context.blueprint then
             card.ability.extra.current = card.ability.extra.current + card.ability.extra.gain
         end
 
-        -- Appliquer le score
         if context.joker_main and card.ability.extra.current > 1 then
             return {
                 Xmult_mod = card.ability.extra.current,
@@ -1278,7 +1195,6 @@ SMODS.Joker {
             }
         end
 
-        -- Jet de dés après la main
         if context.after and not context.blueprint then
             if pseudorandom('pc_mansour') < G.GAME.probabilities.normal / card.ability.extra.reset_chance then
                 card.ability.extra.current = 1.0
@@ -1335,7 +1251,6 @@ SMODS.Joker {
                 if #destroyable_jokers > 0 then
                     local target = destroyable_jokers[math.random(#destroyable_jokers)]
                     
-                    -- ANIMATION EXPLOSION
                     play_sound('lob_snd_explosion')
                     local x_pos = target.T.x * (love.graphics.getWidth()/G.ROOM.T.w) + (target.T.w/2)
                     local y_pos = target.T.y * (love.graphics.getHeight()/G.ROOM.T.h) + (target.T.h/2)
@@ -1343,9 +1258,7 @@ SMODS.Joker {
                     
                     target:start_dissolve()
                     
-                    -- VICTOIRE INSTANTANÉE SANS ARGENT
                     G.GAME.blind.chips = 0
-                    -- Mise à jour visuelle du score de la blind
                     G.GAME.blind.chip_text = "0"
                     
                     return { message = "Git Push -f !", colour = G.C.RED }
@@ -1356,15 +1269,6 @@ SMODS.Joker {
 }
 
 
-
-
-
-
-
-
--- --- CATEGORIE MINECRAFT ---
-
--- Create : Gagne +5 chips quand n'importe quoi est retrigger
 SMODS.Joker {
     key = 'create',
     loc_txt = {
@@ -1444,7 +1348,6 @@ SMODS.Joker {
                 local target_rarity = target.config.center.rarity
                 target:start_dissolve() 
 
-                -- On crée un pool strict contenant uniquement la même rareté
                 local pool = {}
                 for k, v in pairs(G.P_CENTERS) do
                     if v.set == 'Joker' and not v.no_pool and v.rarity == target_rarity and k ~= target.config.center.key then
@@ -1454,7 +1357,6 @@ SMODS.Joker {
                 
                 if #pool > 0 then
                     local new_key = pool[math.random(#pool)]
-                    -- On force la clé spécifique pour garantir la rareté
                     local new_joker = create_card('Joker', G.jokers, nil, nil, nil, nil, new_key, 'prj')
                     
                     new_joker:add_to_deck()
@@ -1469,7 +1371,6 @@ SMODS.Joker {
     end
 }
 
--- Botania : Xchips par carte weed consommée
 SMODS.Joker {
     key = 'botania',
     loc_txt = {
@@ -1493,11 +1394,9 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- Vérification stricte via la clé de la carte Weed (c_lob_weed)
         if context.using_consumeable and not context.blueprint then
             if context.consumeable.config.center.key == 'c_lob_weed' then
                 card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.gain
-                -- Message discret au-dessus de la carte pour montrer qu'elle a scale
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = 'Mana!', colour = G.C.GREEN})
             end
         end
@@ -1511,7 +1410,6 @@ SMODS.Joker {
     end
 }
 
--- Cataclysm : -50% score requis si vendu
 SMODS.Joker {
     key = 'cataclysm',
     loc_txt = {
@@ -1536,7 +1434,6 @@ SMODS.Joker {
     end
 }
 
--- Ice and Fire : Tag Dragon si vendu
 SMODS.Joker {
     key = 'ice_and_fire',
     loc_txt = {
@@ -1561,7 +1458,6 @@ SMODS.Joker {
     end
 }
 
--- Broken Bad : Génère des cartes Weed selon la main jouée
 SMODS.Joker {
     key = 'broken_bad',
     loc_txt = {
@@ -1584,13 +1480,11 @@ SMODS.Joker {
         return { vars = { localize(card.ability.extra.target_hand, 'poker_hands') } }
     end,
     calculate = function(self, card, context)
-        -- Reset au début de manche
         if context.first_hand_drawn then card.ability.extra.triggered = false end
         
         if context.before and context.scoring_name == card.ability.extra.target_hand and not card.ability.extra.triggered then
             card.ability.extra.triggered = true
             local count = 1
-            -- Synergie avec Create
             if next(SMODS.find_card('j_lob_create')) then count = count + 1 end
             
             for i = 1, count do
@@ -1603,7 +1497,6 @@ SMODS.Joker {
     end
 }
 
--- Ae2 : Détruit le joker à droite pour des chips
 SMODS.Joker {
     key = 'ae2',
     loc_txt = {
@@ -1629,15 +1522,12 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
         if context.end_of_round and not context.blueprint and not context.individual and not context.repetition then
-            -- Recherche de ma position
             local my_pos = nil
             for i=1, #G.jokers.cards do if G.jokers.cards[i] == card then my_pos = i break end end
             
-            -- Si je suis trouvé et que je ne suis pas le dernier
             if my_pos and my_pos < #G.jokers.cards then
                 local target = G.jokers.cards[my_pos + 1]
                 
-                -- Si la cible existe, n'est pas éternelle et n'est pas déjà en train d'être détruite
                 if target and not target.config.center.eternal and not target.getting_sliced then
                     target.getting_sliced = true
                     
@@ -1659,7 +1549,6 @@ SMODS.Joker {
     end
 }
 
--- Terraria : Survie à la mort (Mr Bones Style + Perte d'argent)
 SMODS.Joker {
     key = 'terraria',
     loc_txt = {
@@ -1698,7 +1587,6 @@ SMODS.Joker {
     end
 }
 
--- Urschleim : Détruit à droite, gagne valeur de vente, Tag tous les 2
 SMODS.Joker {
     key = 'urschleim',
     loc_txt = {
@@ -1726,13 +1614,12 @@ SMODS.Joker {
             for i=1, #G.jokers.cards do if G.jokers.cards[i] == card then my_pos = i break end end
             local target = G.jokers.cards[my_pos + 1]
 
-            -- On vérifie que la cible existe ET qu'elle n'est pas DÉJÀ en train d'être détruite
             if target and not target.config.center.eternal and not target.getting_sliced then
-                target.getting_sliced = true -- Verrou de sécurité !
+                target.getting_sliced = true 
                 
                 local sell_val = target.sell_cost or 0
                 card.ability.extra_value = card.ability.extra_value + (sell_val * 2)
-                card:set_cost() -- Indispensable pour mettre à jour l'UI de vente !
+                card:set_cost()
                 
                 card.ability.extra.destroyed = card.ability.extra.destroyed + 1
                 target:start_dissolve()
@@ -1746,7 +1633,6 @@ SMODS.Joker {
     end
 }
 
--- Entre-Suceur : Retrigger les jokers situés entre deux Entre-Suceurs
 SMODS.Joker {
     key = 'entre_suceur',
     loc_txt = {
@@ -1765,36 +1651,38 @@ SMODS.Joker {
     pos = { x = 1, y = 5 },
     cost = 3,
 
+    in_pool = function(self, args)
+        return true, { allow_duplicates = true }
+    end,
+
     calculate = function(self, card, context)
-        -- L'API native de SMODS pour gérer proprement les redéclenchements
         if context.retrigger_joker_check and not context.retrigger_joker then
-            local suceurs_pos = {}
-            
-            -- On liste la position de tous les Entre-Suceurs actifs
-            for i, c in ipairs(G.jokers.cards) do
-                if c.config.center.key == 'j_lob_entre_suceur' and not c.debuff then
-                    table.insert(suceurs_pos, i)
+            local selfid = 0
+            local suceurcount = 0
+            local othersuceur = 0
+
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then selfid = i end
+                if G.jokers.cards[i].config.center.key == card.config.center.key and not G.jokers.cards[i].debuff then
+                    suceurcount = suceurcount + 1
                 end
             end
-            
-            -- S'il y en a au moins 2, on vérifie qui est au milieu
-            if #suceurs_pos >= 2 then
-                local pos1 = suceurs_pos[1]
-                local pos2 = suceurs_pos[#suceurs_pos]
-                local target_pos = nil
-                
-                -- Position du Joker que le jeu est en train d'évaluer
-                for i, c in ipairs(G.jokers.cards) do
-                    if c == context.other_card then 
-                        target_pos = i 
-                        break 
-                    end
+
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] ~= card and G.jokers.cards[i].config.center.key == card.config.center.key then
+                    othersuceur = i
                 end
-                
-                -- Si ce Joker est pris en sandwich, on déclenche
-                if target_pos and target_pos > pos1 and target_pos < pos2 then
+            end
+
+            if suceurcount >= 2 and selfid < othersuceur then
+                local target_pos = 0
+                for i = 1, #G.jokers.cards do
+                    if G.jokers.cards[i] == context.other_card then target_pos = i end
+                end
+
+                if target_pos > selfid and target_pos < othersuceur then
                     return {
-                        message = 'splsplsplspl',
+                        message = 'Suceur !',
                         repetitions = 1,
                         card = card
                     }
@@ -1804,78 +1692,82 @@ SMODS.Joker {
     end
 }
 
--- Booster : Stocke valeur chips, booste joker à gauche à la vente
+local function lob_boost_card_values(t, multiplier)
+    for k, v in pairs(t) do
+        if type(v) == 'number' then
+            if (k == 'x_mult' or k == 'x_chips' or k == 'perma_x_mult' or k == 'perma_x_chips') and (v == 0 or v == 1) then
+            else
+                t[k] = v * multiplier
+            end
+        elseif type(v) == 'table' and k ~= 'consumeable' then
+            lob_boost_card_values(v, multiplier)
+        end
+    end
+end
+
 SMODS.Joker {
     key = 'booster',
+    config = { extra = { stored_chips = 0 } },
     loc_txt = {
         name = 'Booster',
         text = {
             "Début de manche : {C:red}détruit{} le Joker à gauche",
             "et stocke sa valeur ({C:blue}+1 Jeton{} par {C:money}${}).",
-            "À la {C:attention}vente{}, le Joker à gauche gagne",
-            "{X:mult,C:white}X0.10{} à ses valeurs pour chaque",
-            "{C:blue}2 Jetons{} stockés.",
+            "À la {C:attention}vente{}, le Joker à gauche",
+            "multiplie ses valeurs par {X:mult,C:white}X0.10{}",
+            "pour chaque {C:blue}2 Jetons{} stockés.",
             "{C:inactive}(Actuellement {C:blue}#1#{} Jetons stockés)"
         }
     },
-    config = { extra = { stored_chips = 0 } },
+
     blueprint_compat = false,
     pools = { ["LOB"] = true, ["MINECRAFT"] = true },
     rarity = 1,
     atlas = 'jokers_common',
     pos = { x = 2, y = 5 },
     cost = 5,
-    
+
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.stored_chips } }
+        return { vars = { card.ability.extra.stored_chips or 0 } }
     end,
-    
+
     calculate = function(self, card, context)
         if context.first_hand_drawn and not context.blueprint then
             local my_pos = nil
-            for i=1, #G.jokers.cards do if G.jokers.cards[i] == card then my_pos = i break end end
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then my_pos = i break end
+            end
             if my_pos and my_pos > 1 then
                 local target = G.jokers.cards[my_pos - 1]
                 if target and not target.config.center.eternal then
-                    card.ability.extra.stored_chips = card.ability.extra.stored_chips + (target.sell_cost or 0)
+                    card.ability.extra.stored_chips = (card.ability.extra.stored_chips or 0) + (target.sell_cost or 0)
                     target:start_dissolve()
                     return { message = "Scrap!", colour = G.C.ORANGE }
                 end
             end
         end
 
-        if context.selling_self and not context.blueprint and card.ability.extra.stored_chips > 0 then
+        if context.selling_self and not context.blueprint and (card.ability.extra.stored_chips or 0) > 0 then
             local my_pos = nil
-            for i=1, #G.jokers.cards do if G.jokers.cards[i] == card then my_pos = i break end end
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then my_pos = i break end
+            end
             if my_pos and my_pos > 1 then
                 local target = G.jokers.cards[my_pos - 1]
                 local multiplier = 1 + math.floor(card.ability.extra.stored_chips / 2) * 0.10
-                
-                if target and multiplier > 1 then
-                    local boosted = false
-                    -- Boost agressif à la Cryptid pour forcer la sauvegarde des stats
-                    if target.ability.mult then target.ability.mult = target.ability.mult * multiplier; boosted = true end
-                    if target.ability.chips then target.ability.chips = target.ability.chips * multiplier; boosted = true end
-                    if target.ability.x_mult then target.ability.x_mult = target.ability.x_mult * multiplier; boosted = true end
 
-                    if target.ability.extra and type(target.ability.extra) == 'table' then
-                        for k, v in pairs(target.ability.extra) do
-                            if type(v) == 'number' then
-                                target.ability.extra[k] = v * multiplier
-                                boosted = true
-                            end
-                        end
-                    end
-                    if boosted then
-                        card_eval_status_text(target, 'extra', nil, nil, nil, {message = "BOOST X"..multiplier.."!", colour = G.C.GREEN})
-                    end
+                if target and multiplier > 1 and not target.config.center.eternal then
+                    lob_boost_card_values(target.ability, multiplier)
+                    card_eval_status_text(target, 'extra', nil, nil, nil, {
+                        message = "BOOSTÉ X" .. string.format("%.2f", multiplier) .. " !",
+                        colour = G.C.GREEN
+                    })
                 end
             end
         end
     end
 }
 
--- Oiseau de feu : Tarot si score enflammé (une main bat la blind)
 SMODS.Joker {
     key = 'oiseau_de_feu',
     loc_txt = {
@@ -1915,8 +1807,6 @@ SMODS.Joker {
         end
     end
 }
-
--- MEMES
 
 SMODS.Atlas {
 	key = "singe_balatro",
@@ -1974,7 +1864,6 @@ SMODS.Atlas {
 	frames = 256
 }
 
--- Maelle : Pile ou Face chips/mult
 SMODS.Joker {
     key = 'maelle',
     loc_txt = {
@@ -2002,7 +1891,6 @@ SMODS.Joker {
     end
 }
 
--- Lune :gagne +2 chips et +2 mult pour chaque carte planéte utilisé
 SMODS.Joker {
     key = 'lune',
     loc_txt = {
@@ -2048,7 +1936,6 @@ SMODS.Joker {
     end
 }
 
--- sing ebalatro : X2 chips , 1 chance sur 10 de généré un gros michel ou cavendish si gros michel mort (joker vanilal) négatif et d'etre détruit
 SMODS.Joker {
     key = 'singe_balatro',
     loc_txt = {
@@ -2075,7 +1962,7 @@ SMODS.Joker {
             return { x_chips = card.ability.extra.x_chips }
         end
         if context.end_of_round and not context.blueprint and not context.individual and not context.repetition then
-            if not card.getting_sliced then -- Sécurité
+            if not card.getting_sliced then 
                 if pseudorandom('singe_balatro') < G.GAME.probabilities.normal / card.ability.extra.odds then
                     card.getting_sliced = true
                     local target = G.GAME.pool_flags.gros_michel_extinct and 'j_cavendish' or 'j_gros_michel'
@@ -2093,7 +1980,6 @@ SMODS.Joker {
     end
 }
 
--- sinj ambulance : génére une carte meme quand un joker est détruit, seulement 4 utilisation avant de devenir un joker singe déprimé
 SMODS.Joker {
     key = 'singe_ambulancier',
     loc_txt = {
@@ -2118,7 +2004,6 @@ SMODS.Joker {
         if context.selling_card and context.card.ability.set == 'Joker' and not context.blueprint then
             card.ability.extra.uses = card.ability.extra.uses - 1
             
-            -- Récupérer uniquement les Jokers de la pool MEME
             local eligible_jokers = {}
             for k, v in pairs(G.P_CENTERS) do
                 if v.set == 'Joker' and v.pools and v.pools["MEME"] then table.insert(eligible_jokers, k) end
@@ -2135,7 +2020,7 @@ SMODS.Joker {
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         card:set_ability(G.P_CENTERS.j_lob_singe_deprime)
-                        card:set_eternal(true) -- Devient éternel !
+                        card:set_eternal(true)
                         card_eval_status_text(card, 'extra', nil, nil, nil, {message = "Déprimé...", colour = G.C.BLUE})
                         return true
                     end
@@ -2146,7 +2031,7 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-    -- X0.5 mult et chips, gagne un tag aléatoire a la fin de la manche
+    
     key = 'singe_deprime',
     loc_txt = {
         name = 'Singe Déprimé',
@@ -2177,7 +2062,7 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-    -- +200 chips, lose 1 chip per click
+    
     key = 'sus_balatro',
     loc_txt = {
         name = 'Sus Balatro',
@@ -2221,7 +2106,7 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-    -- when sold, beat this blind, with no checkout
+    
     key = 'among_us_fart',
     loc_txt = {
         name = 'Among Us Fart',
@@ -2240,11 +2125,9 @@ SMODS.Joker {
     sell_cost = 0,
     calculate = function(self, card, context)
         if context.selling_self and not context.blueprint then
-            -- 1. On bat la blind sans donner d'argent
             G.GAME.blind.chips = 0
             G.GAME.blind.dollars = 0
             
-            -- 2. Pénalité : 5$ par Joker possédé
             local joker_count = #G.jokers.cards
             local penalty = joker_count * 5
             ease_dollars(-penalty)
@@ -2278,7 +2161,6 @@ SMODS.Joker {
         local my_pos = nil
         for i=1, #G.jokers.cards do if G.jokers.cards[i] == card then my_pos = i break end end
         
-        -- EFFET BLUEPRINT (Copie à gauche)
         if my_pos and my_pos > 1 then
             local left_joker = G.jokers.cards[my_pos - 1]
             local blueprint_ret = SMODS.blueprint_effect(card, left_joker, context)
@@ -2287,7 +2169,6 @@ SMODS.Joker {
             end
         end
 
-        -- EFFET DESTRUCTION (À droite)
         if context.end_of_round and not context.blueprint and not context.repetition then
             if my_pos and my_pos < #G.jokers.cards then
                 local right_joker = G.jokers.cards[my_pos + 1]
@@ -2348,15 +2229,14 @@ SMODS.Joker{
     end,
 
     check_for_unlock = function(self, args)
-        if args.type == 'test' then --not a real type, just a joke
+        if args.type == 'test' then 
             unlock_card(self)
         end
-        unlock_card(self) --unlocks the card if it isnt unlocked
+        unlock_card(self) 
     end,
 }
 
 SMODS.Joker {
-    -- transforme toute les cartes de la premiére main en carte pierre, avec une édition aléatoire (sauf négative)
     key = 'ganondorf',
     loc_txt = {
         name = 'Ganondorf',
@@ -2379,15 +2259,12 @@ SMODS.Joker {
             delay = 0.5,
             func = function()
                 for _, v in ipairs(context.scoring_hand) do
-                    -- 1. Transformer en Carte Pierre
                     v:set_ability(G.P_CENTERS.m_stone, nil, true)
                     
-                    -- 2. Donner une édition aléatoire
                     local possible_editions = {'e_foil', 'e_holo', 'e_polychrome'}
 					local edition = possible_editions[math.random(1, #possible_editions)]
 					v:set_edition(edition, true)
                     
-                    -- Effet visuel sur chaque carte
                     v:juice_up()
                 end
                 return true
@@ -2397,36 +2274,4 @@ SMODS.Joker {
         return { message = "MOUAHAHAHAHA!", colour = G.C.RED }
     end
 end
-}
-
-SMODS.Joker {
-    -- 
-	key = 'joker',
-	loc_txt = {
-		name = 'Joker',
-		text = {
-			"pas implémenté",
-		}
-	},
-
-
-	blueprint_compat = true,
-	eternal_compat   = true,
-	perishable_compat= true,
-
-    pools = { ["LOB"] = true, ["MEME"] = true },
-
-	rarity = 1,
-	atlas  = 'LOB',
-	pos    = { x = 3, y = 6 },
-	cost   = 3,
-
-	loc_vars = function(self, info_queue, card)
-	end,
-
-    set_ability = function(self, card, initial, delay_sprites)
-    end,
-
-	calculate = function(self, card, context)
-	end
 }

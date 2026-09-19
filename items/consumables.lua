@@ -277,14 +277,12 @@ SMODS.Consumable {
         return true
     end,
     use = function(self, card, area, copier)
-        -- 1. Retourne toutes les cartes face visible
         for i=1, #G.hand.cards do
             if G.hand.cards[i].facing == 'front' then
                 G.hand.cards[i]:flip()
             end
         end
 
-        -- 2. Mélange la main pour que le joueur soit perdu
         G.hand:shuffle()
 
         G.GAME.lob_next_hand_xmult = 3
@@ -414,10 +412,8 @@ SMODS.Consumable {
     atlas = "LOB_consumeable", 
     pos = {x = 3, y = 1},
 
-    -- On autorise l'apparition en boutique et booster
     in_pool = function(self) return true end,
 
-    -- Vérifie si UN SEUL joker est sélectionné
     can_use = function(self, card)
         return G.jokers and #G.jokers.highlighted == 1
     end,
@@ -427,7 +423,6 @@ SMODS.Consumable {
         
         local target_key = target.config.center.key
         
-        -- Table de correspondance (Clé du Joker sacrifié -> Clé du Lukas invoqué)
         local lukas_map = {
             j_lob_mansour  = "j_lob_lukas_soumi",
             j_lob_yanis    = "j_lob_lukas_fou",
@@ -443,11 +438,9 @@ SMODS.Consumable {
 
         local spawn_key = lukas_map[target_key] or "j_lob_lukas"
 
-        -- Animation de début
         play_sound('tarot1')
         card:juice_up(0.3, 0.5)
 
-        -- 1. On détruit le Joker sacrifié avec une animation
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
             delay = 0.4,
@@ -457,7 +450,6 @@ SMODS.Consumable {
             end
         }))
 
-        -- 2. On invoque le nouveau Lukas
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
             delay = 0.4,
@@ -465,7 +457,7 @@ SMODS.Consumable {
                 local new_joker = SMODS.add_card({
                     set = "Joker",
                     key = spawn_key,
-                    ins_at = target.states.last_sort_order -- Garde la même position
+                    ins_at = target.states.last_sort_order
                 })
                 new_joker:juice_up(0.3, 0.5)
                 return true
@@ -474,7 +466,6 @@ SMODS.Consumable {
     end
 }
 
--- reset open to lan on run restart (and other variables)
 local _startrunhook = Game.start_run
 function Game:start_run(args)
     _startrunhook(self, args)

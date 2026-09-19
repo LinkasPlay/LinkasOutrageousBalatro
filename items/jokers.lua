@@ -1,12 +1,3 @@
--- STEAMODDED HEADER
---- MOD_NAME: Linkas' Outrageous Ballatro
---- MOD_ID: LinkasOBAlatro
---- MOD_AUTHOR: Linkas Play
---- MOD_DESCRIPTION: hi
---- PREFIX: LOB
-----------------------------------------------------------
------------ MOD CODE -------------------------------------
-
 SMODS.Atlas {
 	key = "LOB",
 	path = "jokersprof.png",
@@ -14,10 +5,7 @@ SMODS.Atlas {
 	py = 95
 }
 
--- PRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-
 SMODS.Joker {
-    -- si joue main random, puissance 5, sinon x0
 	key = 'el_amine_khalid',
 	loc_txt = {
 		name = 'El Amine Khalid',
@@ -118,7 +106,6 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- Reset au début de la main
         if context.before and not context.blueprint then
             card.ability.extra.chips = 0
             return {
@@ -127,7 +114,6 @@ SMODS.Joker {
             }
         end
 
-        -- Apport des chips au score
         if context.joker_main then
             return {
                 chip_mod = math.floor(card.ability.extra.chips),
@@ -137,16 +123,13 @@ SMODS.Joker {
         
     end,
 
-    -- Intégration directe avec ton système de ticks
     update = function(self, card, dt)
-        -- On autorise l'accumulation dès qu'on est dans une manche active
         if G.STATE == G.STATES.SELECTING_HAND or G.STATE == G.STATES.PLAY_TAROT or G.STATE == G.STATES.HAND_PLAYED then
             if not card.ability.extra.last_tick then card.ability.extra.last_tick = lob.ticks end
             
             if lob.ticks >= card.ability.extra.last_tick + 100 then
                 card.ability.extra.chips = card.ability.extra.chips + 1
                 card.ability.extra.last_tick = lob.ticks
-                -- Feedback visuel léger
                 card_eval_status_text(card, 'extra', nil, nil, nil, {
                     message = "+1",
                     colour = G.C.CHIPS,
@@ -178,9 +161,7 @@ SMODS.Joker {
     cost = 10,
 
     calculate = function(self, card, context)
-        -- 1. XMult pendant le calcul
         if context.individual and context.cardarea == G.play then
-            -- On utilise le centre directement pour éviter les erreurs de nom
             if context.other_card.config.center == G.P_CENTERS.m_lob_noisy then
                 return {
                     x_mult = 1.25,
@@ -190,12 +171,9 @@ SMODS.Joker {
             end
         end
 
-        -- 2. Inversion APRES le score (context.after)
-        -- On ajoute "not context.repetition" pour éviter que ça s'inverse 50 fois
         if context.after and not context.blueprint and not context.repetition then
             local flipped = false
             for _, c in ipairs(context.full_hand or {}) do
-                -- On check la clé SMODS exacte
                 if c.config.center == G.P_CENTERS.m_lob_noisy then
                     c:set_ability(G.P_CENTERS.m_lob_silent, nil, true)
                     flipped = true
@@ -309,10 +287,8 @@ SMODS.Joker {
             local rand = 1.0
             
             if is_high then
-                -- Entre 1.01 et 100
                 rand = 1.01 + pseudorandom('aranciaba_high') * 98.99
             else
-                -- Entre 0.01 et 0.99
                 rand = 0.01 + pseudorandom('aranciaba_low') * 0.98
             end
             
@@ -346,7 +322,6 @@ SMODS.Joker {
             "{C:inactive}(Actuellement +#2#){}"
         }
     },
-    -- On stocke le bonus actuel pour savoir quand le mettre à jour
     config = { extra = { current_prof_bonus = 0 } },
     blueprint_compat = true,
     eternal_compat = true,
@@ -362,22 +337,17 @@ SMODS.Joker {
         return { vars = { 1, card.ability.extra.current_prof_bonus or 0 } }
     end,
 
-    -- Cette fonction s'exécute à chaque frame
     update = function(self, card, dt)
-        -- On vérifie que le jeu est lancé et que les tables existent
         if G.jokers and G.jokers.cards and G.hand then
             local prof_count = 0
-            -- Si le joker n'est pas debuff, on compte les autres Profs
             if not card.debuff then
                 for _, j in ipairs(G.jokers.cards) do
-                    -- On vérifie si l'autre joker a le pool "PROF"
                     if j ~= card and j.config.center.pools and j.config.center.pools["PROF"] and not j.debuff then
                         prof_count = prof_count + 1
                     end
                 end
             end
             
-            -- Si le nombre a changé, on applique la différence à G.hand
             local current = card.ability.extra.current_prof_bonus or 0
             if prof_count ~= current then
                 G.hand:change_size(prof_count - current)
@@ -386,7 +356,6 @@ SMODS.Joker {
         end
     end,
 
-    -- Sécurité : on retire le bonus si le joker est vendu ou détruit
     remove_from_deck = function(self, card, from_debuff)
         if G.hand and card.ability.extra.current_prof_bonus ~= 0 then
             G.hand:change_size(-(card.ability.extra.current_prof_bonus or 0))
@@ -522,13 +491,11 @@ SMODS.Joker {
             end
         end
 
-        -- Mise à jour au début de la manche
         if context.setting_blind and not context.blueprint then
             if has_ludivic then
                 return { message = "Bloqué !", colour = G.C.RED, card = card }
             end
 
-            -- Compte les AUTRES professeurs en plateau
             local other_prof_count = 0
             for _, j in ipairs(G.jokers.cards) do
                 if j ~= card and j.config.center.pools and j.config.center.pools["PROF"] then
@@ -537,17 +504,14 @@ SMODS.Joker {
             end
 
             if other_prof_count == 0 then
-                -- Banica est le seul prof !
                 card.ability.extra.xmult = (card.ability.extra.xmult or 1) + 1
                 return { message = "+1 Xmult", colour = G.C.MULT, card = card }
             else
-                -- D'autres profs sont présents
                 card.ability.extra.xmult = math.max(0, (card.ability.extra.xmult or 1) - 1)
                 return { message = "-1 Xmult", colour = G.C.RED, card = card }
             end
         end
 
-        -- Application lors du calcul du score
         if context.joker_main then
             local xm = has_ludivic and 0 or (card.ability.extra.xmult or 1)
             return { message = "X" .. xm, Xmult_mod = xm, colour = G.C.MULT }
@@ -584,19 +548,16 @@ SMODS.Joker {
         return { vars = { card.ability.extra.timer, card.ability.extra.xmult } }
     end,
     calculate = function(self, card, context)
-        -- Gain de Xmult par défausse
         if context.discard and not context.blueprint then
             card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.gain
             return { message = "+" .. card.ability.extra.gain .. " Xmult", colour = G.C.RED }
         end
 
-        -- RESET TIMER : Si on détruit ou retire une carte (Joker, Consommable ou Carte à jouer)
         if context.lob_card_destroyed and not context.blueprint then
             card.ability.extra.timer = 3
             return { message = "Mémoire allouée !", colour = G.C.GREEN, card = card }
         end
 
-        -- Destruction si carte bruyante
         if context.individual and context.cardarea == G.play then
             if context.other_card.config.center_key == 'm_lob_noisy' then
                 G.E_MANAGER:add_event(Event({func = function() 
@@ -606,7 +567,6 @@ SMODS.Joker {
             end
         end
 
-        -- Fin de manche : Baisse du timer et reset Xmult
         if context.end_of_round and not context.blueprint and not (context.individual or context.repetition) then
             card.ability.extra.timer = card.ability.extra.timer - 1
             card.ability.extra.xmult = 1
@@ -641,17 +601,14 @@ SMODS.Joker {
     cost = 10,
 
     calculate = function(self, card, context)
-        -- On déclenche au début de la manche
         if context.first_hand_drawn and not context.blueprint then
             
-            -- On définit l'ID exact
             local card_key = 'c_lob_weed'
 
             G.E_MANAGER:add_event(Event({
                 trigger = 'after',
                 delay = 0.4,
                 func = function()
-                    -- SECURITÉ : On vérifie si la définition de la carte existe
                     if G.P_CENTERS[card_key] then
                         local weed_card = create_card('Tarot', G.consumeables, nil, nil, nil, nil, card_key, 'c_lob_weed')
                         
@@ -661,7 +618,6 @@ SMODS.Joker {
                         
                         card_eval_status_text(card, 'extra', nil, nil, nil, { message = "Smoking" })
                     else
-                        -- Si on arrive ici, c'est que l'ID 'c_lob_weed' n'est pas reconnu par le jeu
                         card_eval_status_text(card, 'extra', nil, nil, nil, { message = "No Weed found!" })
                     end
                     return true
@@ -682,7 +638,7 @@ SMODS.Joker {
         }
     },
     config = { extra = { slot_bonus = 1, current_bonus = 0 } },
-    blueprint_compat = false, -- Pas de blueprint pour les limites de Jokers, c'est trop instable
+    blueprint_compat = false,
     eternal_compat = true,
     perishable_compat = true,
     pools = { ["PROF"] = true, ["INFO"] = true, ["LOB"] = true },
@@ -696,7 +652,6 @@ SMODS.Joker {
         return { vars = { card.ability.extra.slot_bonus, card.ability.extra.current_bonus or 0 } }
     end,
 
-    -- Update vérifie en permanence le nombre de Profs et ajuste les emplacements en direct
     update = function(self, card, dt)
         if G.jokers and G.jokers.cards then
             local count = 0
@@ -707,7 +662,6 @@ SMODS.Joker {
             end
             
             local current = card.ability.extra.current_bonus or 0
-            -- Si le compte a changé, on met à jour la limite globale de jokers
             if current ~= count then
                 local diff = count - current
                 G.jokers.config.card_limit = G.jokers.config.card_limit + diff
@@ -716,7 +670,6 @@ SMODS.Joker {
         end
     end,
 
-    -- S'il est détruit ou vendu, on retire le bonus qu'il a donné
     remove_from_deck = function(self, card, from_debuff)
         if card.ability.extra.current_bonus then
             G.jokers.config.card_limit = G.jokers.config.card_limit - card.ability.extra.current_bonus
@@ -749,7 +702,6 @@ SMODS.Joker {
         local tacos_held = 0
         if G.consumeables then
             for k, v in ipairs(G.consumeables.cards) do
-                -- Vérification propre de la clé du consommable
                 if v.config.center.key == 'c_lob_taco' then tacos_held = tacos_held + 1 end
             end
         end
@@ -760,7 +712,6 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- 1. Incrémenter quand on utilise un Taco
         if context.using_consumeable and not context.blueprint then
             if context.consumeable.config.center.key == 'c_lob_taco' then
                 card.ability.extra.taco_used = card.ability.extra.taco_used + 1
@@ -771,7 +722,6 @@ SMODS.Joker {
             end
         end
 
-        -- 2. Appliquer le XMult pendant le calcul du score
         if context.joker_main then
             local tacos_held = 0
             if G.consumeables then
@@ -817,7 +767,6 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- On s'inspire directement de Baseball Card
         if context.other_joker and context.other_joker.config.center.pools and context.other_joker.config.center.pools["PHYSIQUE"] then
             return {
                 xmult = card.ability.extra.xmult,
@@ -860,16 +809,12 @@ SMODS.Joker {
     end
 }
 
--- FINF PROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOFFFFFFFFFFFFFFFFFFFFFFFFF
-
 SMODS.Atlas {
 	key = "jokerseleve",
 	path = "jokerseleve.png",
 	px = 71,
 	py = 95
 }
-
--- DEBUT LUUUUUUUUUUKAS
 
 SMODS.Joker {
     key = 'lukas_soumi',
@@ -899,9 +844,7 @@ SMODS.Joker {
         local right_ret = right and SMODS.blueprint_effect(card, right, context)
 
         if left_ret and right_ret then
-            -- On force l'effet de gauche manuellement
             SMODS.calculate_effect(left_ret, left)
-            -- Et on laisse le moteur gérer l'effet de droite
             return right_ret
         elseif left_ret then
             return left_ret
@@ -935,14 +878,12 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- Gain par carte jouée
         if context.individual and context.cardarea == G.play and not context.blueprint then
             card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.gain
             card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.gain
             return { message = "Folie!", colour = G.C.PURPLE }
         end
 
-        -- Application au score global
         if context.joker_main then
             return {
                 message = "X" .. string.format("%.1f", card.ability.extra.xmult),
@@ -974,12 +915,10 @@ SMODS.Joker {
         if context.first_hand_drawn and not context.blueprint then
             local count = #G.consumeables.cards
             if count > 0 then
-                -- On détruit en partant de la fin
                 for i = count, 1, -1 do
                     G.consumeables.cards[i]:start_dissolve()
                 end
                 
-                -- On donne les tags
                 for i = 1, count do
                     add_tag(Tag(get_next_tag_key('lukas_grenouille')))
                 end
@@ -1053,7 +992,6 @@ SMODS.Joker {
         if context.cards_destroyed and not context.blueprint then
             local gained = false
             for _, c in ipairs(context.cards_destroyed) do
-                -- c.base garantit que c'est bien une carte du deck et non un Joker
                 if c.base and not c:is_face() then
                     card.ability.extra.xchips = card.ability.extra.xchips + card.ability.extra.gain
                     gained = true
@@ -1089,7 +1027,6 @@ SMODS.Joker {
     cost = 20,
 
     loc_vars = function(self, info_queue, card)
-        -- Regarde en temps réel ce que le joueur a sélectionné dans sa main
         local faces_selected = 0
         if G.hand and G.hand.highlighted then
             for _, c in ipairs(G.hand.highlighted) do
@@ -1116,7 +1053,6 @@ SMODS.Joker {
         end
 
         if context.joker_main and card.ability.extra.disabled_count > 0 then
-            -- Somme des X3 (Ex: 2 figures = X6)
             local xmult = card.ability.extra.disabled_count * 3
             return { Xmult_mod = xmult, message = "X"..xmult, colour = G.C.MULT }
         end
@@ -1205,12 +1141,10 @@ SMODS.Joker {
     loc_vars = function(self, info_queue, card)
         local t = card.ability.extra.target or 'm_mult'
         
-        -- Affiche le détail de l'amélioration au survol de la carte
         if G.P_CENTERS[t] then
             table.insert(info_queue, G.P_CENTERS[t])
         end
 
-        -- Récupère le nom localisé via la table Enhanced (et non Enhancement)
         local target_name = (G.localization.descriptions.Enhanced[t] and G.localization.descriptions.Enhanced[t].name) 
                             or (G.P_CENTERS[t] and G.P_CENTERS[t].label) 
                             or t
@@ -1218,10 +1152,12 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        if context.first_hand_drawn and not context.blueprint then
+        if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
             local valid_enhancements = {}
             for k, v in pairs(G.P_CENTERS) do
-                if v.set == 'Enhancement' then table.insert(valid_enhancements, k) end
+                if v.set == 'Enhancement' and k ~= card.ability.extra.target then 
+                    table.insert(valid_enhancements, k) 
+                end
             end
             if #valid_enhancements > 0 then
                 card.ability.extra.target = pseudorandom_element(valid_enhancements, pseudoseed('lukas_sci_round'))
@@ -1259,7 +1195,6 @@ SMODS.Joker {
     cost = 20,
 
     calculate = function(self, card, context)
-        -- Effet Baron global
         if context.individual and context.cardarea == G.hand and not context.end_of_round and not context.repetition then
             return {
                 x_mult = 1.5,
@@ -1293,7 +1228,7 @@ SMODS.Joker {
         G.jokers.config.card_limit = (G.jokers.config.card_limit or 5) + 3
         G.consumeables.config.card_limit = (G.consumeables.config.card_limit or 2) + 2
         G.GAME.shop.joker_max = (G.GAME.shop.joker_max or 2) + 1
-        G.GAME.shop.booster_max = (G.GAME.shop.booster_max or 2) + 1
+        G.GAME.modifiers.booster_packs = (G.GAME.modifiers.booster_packs or 2) + 1
     end,
 
     remove_from_deck = function(self, card, from_debuff)
@@ -1301,20 +1236,11 @@ SMODS.Joker {
         G.jokers.config.card_limit = math.max(1, (G.jokers.config.card_limit or 8) - 3)
         G.consumeables.config.card_limit = math.max(1, (G.consumeables.config.card_limit or 4) - 2)
         G.GAME.shop.joker_max = math.max(2, (G.GAME.shop.joker_max or 3) - 1)
-        G.GAME.shop.booster_max = math.max(1, (G.GAME.shop.booster_max or 3) - 1)
+        G.GAME.modifiers.booster_packs = math.max(1, (G.GAME.modifiers.booster_packs or 3) - 1)
     end
 }
 
-
-
-
-
--- FIIIIIIIIIIIIIN LUUUUUUUUUKAS
-
--- DEEEEEBUT ELELEVE
-
 SMODS.Joker {
-    -- génère une crate rituel de lukas quand le joker est vendu
     key = 'lukas',
 
     loc_txt = {
@@ -1355,7 +1281,6 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-    -- génère 1 taco au début de la manche, +1 taco négatif par élève
     key = 'zozan',
 
     loc_txt = {
@@ -1452,7 +1377,6 @@ SMODS.Joker {
                 end
             end
             
-            -- On ajoute une animation sur le Joker Modpack s'il a mangé des cibles
             if destroyed then
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = 'Nettoyage!', colour = G.C.RED})
                 card:juice_up(0.5, 0.5)
@@ -1460,7 +1384,6 @@ SMODS.Joker {
         end
 
         if context.joker_main then
-            -- On utilise x_chips qui est la syntaxe SMODS moderne pour multiplier les jetons
             return {
                 x_chips = card.ability.extra.xchips,
                 message = "X" .. card.ability.extra.xchips,
@@ -1546,25 +1469,21 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
         if context.end_of_round and not context.blueprint then
-            -- 1. Détruit les cartes en main
             for i,v in ipairs(G.hand.cards) do
                 v:start_dissolve()
             end
 
-            -- 2. Effets visuels et sonores (identique au terroriste élégant)
             play_sound('lob_snd_explosion') 
             local x_pos = card.T.x * (love.graphics.getWidth()/G.ROOM.T.w) + (card.T.w/2)
             local y_pos = card.T.y * (love.graphics.getHeight()/G.ROOM.T.h) + (card.T.h/2)
             add_lob_effect("explosion", x_pos, y_pos)
 
-            -- 3. Autodestruction de Yanis
             card:start_dissolve()
         end
     end
 }
 
 SMODS.Joker {
-    -- mult X5 contre les boss
     key = 'pixel',
 
     loc_txt = {
@@ -1598,7 +1517,6 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-    -- applique un dark seal aux cartes wild jouées
     key = 'lucien',
 
     loc_txt = {
@@ -1655,7 +1573,6 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- Quand on vend une carte
         if context.selling_card and not context.blueprint then
             if context.card.config.center.pools and context.card.config.center.pools["EXERCISE"] then
                 card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.gain
@@ -1663,7 +1580,6 @@ SMODS.Joker {
             end
         end
 
-        -- Apport du multiplicateur
         if context.joker_main then
             if card.ability.extra.xmult > 1 then
                 return { 
@@ -1698,7 +1614,6 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
             local c = context.other_card
-            -- Détection ultra-robuste par l'objet center
             local is_noisy = (c.config.center == G.P_CENTERS.m_lob_noisy)
             local is_silent = (c.config.center == G.P_CENTERS.m_lob_silent)
 
@@ -1714,7 +1629,6 @@ SMODS.Joker {
 }
 
 SMODS.Joker {
-    -- scale mult par cartes sans enhancement
     key = 'matteo',
 
     loc_txt = {
@@ -1745,9 +1659,7 @@ SMODS.Joker {
     end,
 
     calculate = function(self, card, context)
-        -- Si une carte est jouée et marquée
         if context.individual and context.cardarea == G.play then
-            -- Vérifie si la carte est une carte de base (SANS enhancement)
             if context.other_card.config.center == G.P_CENTERS.c_base then
                 card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.gain
                 return {
@@ -1762,13 +1674,6 @@ SMODS.Joker {
         end
     end
 }
-
--- FIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIN ELLLLLLLLLLLLLLLLLLLEVE
-
-
-
-
-
 
 
 for k,v in pairs(G.P_CENTERS) do

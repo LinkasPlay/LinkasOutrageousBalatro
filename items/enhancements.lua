@@ -77,14 +77,13 @@ SMODS.Enhancement {
     },
     calculate = function(self, card, context)
         if context.repetition and context.cardarea == G.play then
-            -- On vérifie si une carte bruyante ou silencieuse a été jouée
             local has_trigger_card = false
             for _, played_card in ipairs(context.scoring_hand or {}) do
                 if played_card ~= card and 
                    (played_card.config.center.key == 'm_lob_noisy' or 
                     played_card.config.center.key == 'm_lob_silent') then
                     has_trigger_card = true
-                    break -- On arrête de chercher dès qu'on en trouve une
+                    break 
                 end
             end
             
@@ -116,7 +115,6 @@ SMODS.Seal{
     calculate = function(self, card, context)
         if context.cards_destroyed then
             for _, v in ipairs(context.cards_destroyed) do
-                -- On ajoute le "not card.dark_seal_triggered" pour empêcher la boucle folle
                 if v == card and not card.dark_seal_triggered then
                     card.dark_seal_triggered = true
                     

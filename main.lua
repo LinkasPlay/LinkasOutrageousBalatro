@@ -1,12 +1,3 @@
---- STEAMODDED HEADER
---- MOD_NAME: Linkas' Outrageous Ballatro
---- MOD_ID: linkasobalatro
---- MOD_AUTHOR: Linkas
---- MOD_DESCRIPTION: W mod.
---- PREFIX: lob
-----------------------------------------------------------
------------ MOD CODE -------------------------------------
-
 LinkasOBAlatro = LinkasOBAlatro or {}
 dev_mode = true
 
@@ -125,8 +116,6 @@ for _, pool_data in ipairs(custom_pools) do
     })
 end
 
--- Deck Cy-Tech : ne filtre plus au niveau "peut-on créer un booster" (ça bloquait TOUS les
--- boosters, y compris les tiens) mais au niveau du pool de boosters lui-même.
 local old_get_current_pool = get_current_pool
 function get_current_pool(_type, _rarity, _legendary, _key_append, _initial)
     local pool, weight = old_get_current_pool(_type, _rarity, _legendary, _key_append, _initial)
@@ -204,9 +193,6 @@ G.E_MANAGER:add_event(Event({
     end
 }))
 
--- Tag Dragon : Tags n'ont pas de contexte "au moment où le boss démarre" ;
--- on pose un drapeau à l'obtention du tag, puis on le consomme au vrai moment
--- où la blinde choisie devient active (clic sur "Select" à l'écran des blindes).
 local lob_select_blind_ref = G.FUNCS.select_blind
 G.FUNCS.select_blind = function(e)
     lob_select_blind_ref(e)
@@ -225,6 +211,3 @@ G.FUNCS.select_blind = function(e)
 end
 
 print("[Linkas' Outrageous Ballatro] Mod chargé avec succès !")
-
-----------------------------------------------------------
------------ MOD CODE END ----------------------------------

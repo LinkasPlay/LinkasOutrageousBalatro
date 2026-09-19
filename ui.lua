@@ -4,7 +4,6 @@ SMODS.DrawStep({
     key = "floating_sprite2",
     order = 100,
     func = function(self)
-        -- On vérifie si le joker a une position "extra" définie dans soul_pos
         if self.config.center.soul_pos and self.config.center.soul_pos.extra and (self.config.center.discovered or self.bypass_discovery_center) then
             
             local scale_mod = 0.07
@@ -33,12 +32,9 @@ SMODS.DrawStep({
 
 SMODS.draw_ignore_keys.floating_sprite2 = true
 
--- Initialisation du gestionnaire
 G.effectmanager = G.effectmanager or {}
 
--- Fonctions de chargement adaptées
 function LOB_LoadImage(fn)
-    -- On utilise la variable mod_path sauvegardée plus haut
     local full_path = mod_path .. "customimages/" .. fn
     local file_data = assert(NFS.newFileData(full_path), "Erreur : Fichier image introuvable " .. fn)
     local tempimagedata = love.image.newImageData(file_data)
@@ -46,7 +42,6 @@ function LOB_LoadImage(fn)
 end
 
 function LOB_LoadSpritesheet(fn, px, py, subimg, orientation)
-    -- Idem ici, on remplace SMODS.current_mod.path par mod_path
     local full_path = mod_path .. "customimages/" .. fn
     local file_data = assert(NFS.newFileData(full_path), "Erreur : Spritesheet introuvable " .. fn)
     local tempimagedata = love.image.newImageData(file_data)
@@ -54,16 +49,15 @@ function LOB_LoadSpritesheet(fn, px, py, subimg, orientation)
 
     local spritesheet = {}
     for i = 1, subimg do
-        if orientation == 0 then -- Vertical
+        if orientation == 0 then
             table.insert(spritesheet, love.graphics.newQuad(0, (i-1)*py, px, py, tempimg:getDimensions()))
-        else -- Horizontal
+        else 
             table.insert(spritesheet, love.graphics.newQuad((i-1)*px, 0, px, py, tempimg:getDimensions()))
         end
     end
     return tempimg, spritesheet
 end
 
--- Ajouter un effet à la liste
 function add_lob_effect(name, x, y)
     table.insert(G.effectmanager, {
         {
@@ -78,7 +72,6 @@ function add_lob_effect(name, x, y)
     })
 end
 
--- Hook de dessin (love.draw)
 local draw_origin = love.draw
 function love.draw()
     draw_origin() 
@@ -91,24 +84,21 @@ function love.draw()
             local effect = G.effectmanager[i][1]
             
             if effect.name == "explosion" then
-                -- Chargement à la volée (Lazy Loading)
                 if not G.LOB_img_explosion then
                     G.LOB_img_explosion, G.LOB_quad_explosion = LOB_LoadSpritesheet("explosiongif.png", 200, 282, 17, 0)
                 end
 
                 love.graphics.setColor(1, 1, 1, 1)
-                local _x = effect.xpos - (100 * _xscale) -- Centrage
+                local _x = effect.xpos - (100 * _xscale) 
                 local _y = effect.ypos - (141 * _yscale)
                 
                 love.graphics.draw(G.LOB_img_explosion, G.LOB_quad_explosion[effect.frame], _x, _y, 0, _xscale, _yscale)
 
-                -- Avancement de l'animation
                 effect.timer = effect.timer + 1
-                if effect.timer % 2 == 0 then -- Vitesse de l'animation
+                if effect.timer % 2 == 0 then 
                     effect.frame = effect.frame + 1
                 end
 
-                -- Suppression si terminé
                 if effect.frame > effect.max_frames then
                     table.remove(G.effectmanager, i)
                 end

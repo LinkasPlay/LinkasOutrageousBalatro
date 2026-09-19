@@ -1,4 +1,3 @@
--- Booster Atlas
 SMODS.Atlas{
     key = 'boosteratlas',
     path = 'boosters.png',

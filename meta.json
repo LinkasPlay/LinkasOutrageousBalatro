@@ -1,0 +1,11 @@
+{
+  "title": "Linkas' Outrageous Balatro",
+  "requires-steamodded": true,
+  "requires-talisman": false,
+  "categories": ["Content", "Joker"],
+  "author": "Linkas Play",
+  "repo": "https://github.com/LinkasPlay/LinkasOutrageousBalatro",
+  "downloadURL": "URL_DE_TELECHARGEMENT_ICI",
+  "version": "1.0.0",
+  "automatic-version-check": true
+}

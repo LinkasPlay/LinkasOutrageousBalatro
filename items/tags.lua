@@ -1,13 +1,3 @@
--- tag dragon : désactive l'effet du prochain boss blind
--- tag invisible : duplique la prochaine chose achetée (joker, tarot, packs, etc sauf vouchers)
--- tag lukas : donne un joker lukas (simple) négatif mais -1 hands
--- tag révision : donne un paquet math, physique et informatique
--- tag maléfique : créé un joker professeur aléatoire
--- tag undermine : retire tout l'argent mais tout coûte 1 $ en moins
--- tag clair obscur : donne un joker aléatoire entre maelle, lune, sock and buskin + le prochain boss devient renoir
--- tag boumiz : 1 chance sur 3 de créer Seigneur Boumiz, sinon Boumiz normal
--- tag triforce : créé soit Open To Lan, soit une Soul, soit un Rituel du Lukas, -1 défausse
-
 local base_set_cost = Card.set_cost
 function Card:set_cost()
     base_set_cost(self)
@@ -23,7 +13,6 @@ SMODS.Atlas {
     py = 34
 }
 
--- TAG DRAGON : Désactive le prochain Boss
 SMODS.Tag {
     key = "lob_dragon",
     atlas = "LOB_Tags", pos = { x = 0, y = 0 },
@@ -37,7 +26,6 @@ SMODS.Tag {
     end
 }
 
--- TAG INVISIBLE : Duplique le prochain achat
 SMODS.Tag {
     key = "lob_invisible",
     atlas = "LOB_Tags", pos = { x = 1, y = 0 },
@@ -82,7 +70,6 @@ SMODS.Tag {
     end
 }
 
--- TAG LUKAS : Lukas Négatif mais -1 main
 SMODS.Tag {
     key = "lob_lukas",
     atlas = "LOB_Tags", pos = { x = 2, y = 0 },
@@ -103,7 +90,6 @@ SMODS.Tag {
     end
 }
 
--- TAG RÉVISION : Ouvre Math, Physique et Info à la suite
 SMODS.Tag {
     key = "lob_revision",
     atlas = "LOB_Tags", pos = { x = 3, y = 0 },
@@ -174,7 +160,6 @@ function lob_open_next_revision_pack()
     return true
 end
 
--- TAG MALÉFIQUE : Joker Professeur aléatoire
 SMODS.Tag {
     key = "lob_malefique",
     atlas = "LOB_Tags", pos = { x = 4, y = 0 },
@@ -193,7 +178,6 @@ SMODS.Tag {
     end
 }
 
--- TAG UNDERMINE : Tout à 1$ de moins mais plus d'argent
 SMODS.Tag {
     key = "lob_undermine",
     atlas = "LOB_Tags", pos = { x = 5, y = 0 },
@@ -217,7 +201,6 @@ SMODS.Tag {
     end
 }
 
--- TAG CLAIR OBSCUR : Maelle/Lune/Sock + Boss Renoir
 SMODS.Tag {
     key = "lob_clairobscur",
     atlas = "LOB_Tags", pos = { x = 0, y = 1 },
@@ -241,7 +224,6 @@ SMODS.Tag {
     end
 }
 
--- TAG BOUMIZ : Seigneur Boumiz (1/3) ou normal
 SMODS.Tag {
     key = "lob_boumiz",
     atlas = "LOB_Tags", pos = { x = 1, y = 1 },
@@ -261,7 +243,6 @@ SMODS.Tag {
     end
 }
 
--- TAG TRIFORCE : Open To Lan, Soul ou Rituel, -1 défausse
 SMODS.Tag {
     key = "lob_triforce",
     atlas = "LOB_Tags", pos = { x = 2, y = 1 },

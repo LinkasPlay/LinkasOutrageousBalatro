@@ -21,19 +21,15 @@ function Game:update(dt)
         lob.ticks = (lob.ticks or 0) + 1
         lob.dt_counter = lob.dt_counter - 0.01
 
-        -- Réglage de la vitesse : 8 ticks (~12 fps). 
-        -- Descends à 4 ou 5 si tu veux que ce soit plus nerveux (20-25 fps).
         if math.fmod(lob.ticks, 8) == 0 then
             for _, j in ipairs(animated_jokers) do
                 local center = G.P_CENTERS[j.key]
                 if center then
-                    -- On incrémente la frame interne
                     center.anim_frame = (center.anim_frame or 0) + 1
                     if center.anim_frame >= j.frames then 
                         center.anim_frame = 0 
                     end
 
-                    -- Calcul dynamique selon la largeur 'w' de chaque grille
                     center.pos.x = math.fmod(center.anim_frame, j.w)
                     center.pos.y = math.floor(center.anim_frame / j.w)
                 end
@@ -60,6 +56,18 @@ end
 local lob_joker_retrigger_ref = Card.calculate_joker
 function Card:calculate_joker(context)
     local ret = lob_joker_retrigger_ref(self, context)
+
+    if context.joker_main and self.ability and self.ability.lob_booster_xmult and self.ability.lob_booster_xmult > 1 then
+        if ret then
+            ret.x_mult = (ret.x_mult or 1) * self.ability.lob_booster_xmult
+        else
+            ret = {
+                message = "X" .. self.ability.lob_booster_xmult,
+                Xmult_mod = self.ability.lob_booster_xmult,
+                colour = G.C.MULT
+            }
+        end
+    end
 
     if context.joker_main and not context.blueprint and G.jokers and G.jokers.cards and self.config.center.key ~= 'j_lob_seigneur_boumiz' and self.config.center.key ~= 'j_lob_entre_suceur' then
         local extra_triggers = 0
@@ -107,9 +115,9 @@ function Controller:L_cursor_press(x, y)
     end
 end
 
--- Hook global pour détecter toute destruction de carte
 local destroy_ref = Card.start_dissolve
 function Card:start_dissolve(delay, ...)
     SMODS.calculate_context({ lob_card_destroyed = true, cards_destroyed = { self } })
     return destroy_ref(self, delay, ...)
 end
+
